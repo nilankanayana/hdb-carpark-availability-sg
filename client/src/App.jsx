@@ -72,6 +72,7 @@ export default function App() {
       <main className="app-main">
         <section className="map-card">
           <LotTypeSelector value={lotType} onChange={setLotType} counts={lotTypeCounts} />
+          <SearchBox carparks={filtered} lotType={lotType} onSelect={setSelectedId} />
           <MapView
             carparks={filtered}
             lotType={lotType}

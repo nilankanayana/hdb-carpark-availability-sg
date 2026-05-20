@@ -14,12 +14,17 @@ export default function SearchBox({ carparks, lotType, onSelect }) {
   const [activeIdx, setActiveIdx] = useState(0);
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef(null);
+  const activeItemRef = useRef(null);
 
   const results = query ? searchCarparks(query, carparks) : [];
 
   useEffect(() => {
     setActiveIdx(0);
   }, [query]);
+
+  useEffect(() => {
+    activeItemRef.current?.scrollIntoView({ block: 'nearest' });
+  }, [activeIdx]);
 
   useEffect(() => {
     const onDocClick = (e) => {
@@ -90,6 +95,7 @@ export default function SearchBox({ carparks, lotType, onSelect }) {
                   key={c.car_park_no}
                   type="button"
                   role="option"
+                  ref={idx === activeIdx ? activeItemRef : null}
                   aria-selected={idx === activeIdx}
                   className={`search-result${idx === activeIdx ? ' search-result--active' : ''}`}
                   onMouseEnter={() => setActiveIdx(idx)}

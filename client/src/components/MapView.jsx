@@ -78,41 +78,38 @@ export default function MapView({ carparks, lotType, selectedId, onSelect }) {
     });
     clusterRef.current.addTo(map);
 
-    const HomeControl = L.Control.extend({
+    const MapActionsControl = L.Control.extend({
       options: { position: 'topright' },
       onAdd() {
-        const el = L.DomUtil.create('div', 'leaflet-bar leaflet-control map-home-control');
-        el.innerHTML =
-          '<a href="#" role="button" title="Reset view" aria-label="Reset map to Singapore overview">⌂</a>';
+        const el = L.DomUtil.create('div', 'leaflet-bar leaflet-control map-actions-control');
+
+        const home = L.DomUtil.create('a', 'map-action-home', el);
+        home.href = '#';
+        home.setAttribute('role', 'button');
+        home.title = 'Reset view';
+        home.setAttribute('aria-label', 'Reset map to Singapore overview');
+        home.innerHTML = '⌂';
+
+        const nearMe = L.DomUtil.create('a', 'map-action-nearme', el);
+        nearMe.href = '#';
+        nearMe.setAttribute('role', 'button');
+        nearMe.title = 'Show my location';
+        nearMe.setAttribute('aria-label', 'Show my location and zoom to nearby car parks');
+        nearMe.innerHTML = LOCATE_ICON_SVG;
+
         L.DomEvent.disableClickPropagation(el);
-        L.DomEvent.on(el, 'click', (e) => {
+        L.DomEvent.on(home, 'click', (e) => {
           L.DomEvent.preventDefault(e);
           map.flyTo(DEFAULT_CENTER, DEFAULT_ZOOM, { duration: 0.6 });
         });
-        return el;
-      },
-    });
-    new HomeControl().addTo(map);
-
-    const NearMeControl = L.Control.extend({
-      options: { position: 'topright' },
-      onAdd() {
-        const el = L.DomUtil.create('div', 'leaflet-bar leaflet-control map-nearme-control');
-        const a = L.DomUtil.create('a', '', el);
-        a.href = '#';
-        a.title = 'Show my location';
-        a.setAttribute('role', 'button');
-        a.setAttribute('aria-label', 'Show my location and zoom to nearby car parks');
-        a.innerHTML = LOCATE_ICON_SVG;
-        L.DomEvent.disableClickPropagation(el);
-        L.DomEvent.on(el, 'click', (e) => {
+        L.DomEvent.on(nearMe, 'click', (e) => {
           L.DomEvent.preventDefault(e);
-          if (a.classList.contains('is-loading')) return;
+          if (nearMe.classList.contains('is-loading')) return;
           if (!navigator.geolocation) {
             setLocationError('Geolocation is not supported by your browser.');
             return;
           }
-          a.classList.add('is-loading');
+          nearMe.classList.add('is-loading');
           setLocationError(null);
           navigator.geolocation.getCurrentPosition(
             (pos) => {
@@ -128,7 +125,7 @@ export default function MapView({ carparks, lotType, selectedId, onSelect }) {
                 }).addTo(map);
               }
               map.flyTo(latlng, NEAR_ME_ZOOM, { duration: 0.8 });
-              a.classList.remove('is-loading');
+              nearMe.classList.remove('is-loading');
             },
             (err) => {
               let msg = 'Unable to get your location.';
@@ -136,7 +133,7 @@ export default function MapView({ carparks, lotType, selectedId, onSelect }) {
               else if (err.code === err.POSITION_UNAVAILABLE) msg = 'Location is currently unavailable.';
               else if (err.code === err.TIMEOUT) msg = 'Location request timed out.';
               setLocationError(msg);
-              a.classList.remove('is-loading');
+              nearMe.classList.remove('is-loading');
             },
             { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
           );
@@ -144,7 +141,7 @@ export default function MapView({ carparks, lotType, selectedId, onSelect }) {
         return el;
       },
     });
-    new NearMeControl().addTo(map);
+    new MapActionsControl().addTo(map);
 
     const ro = new ResizeObserver(() => map.invalidateSize());
     ro.observe(containerRef.current);

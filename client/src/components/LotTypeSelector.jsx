@@ -1,8 +1,8 @@
 const TYPES = [
-  { id: 'C', label: 'Cars' },
-  { id: 'Y', label: 'Motorcycles' },
-  { id: 'H', label: 'Heavy' },
-  { id: 'S', label: 'M/cycle + sidecar' },
+  { id: 'C', label: 'Cars', short: 'Car' },
+  { id: 'Y', label: 'Motorcycles', short: 'Bike' },
+  { id: 'H', label: 'Heavy', short: 'Heavy' },
+  { id: 'S', label: 'M/cycle + sidecar', short: 'Sidecar' },
 ];
 
 export default function LotTypeSelector({ value, onChange, counts }) {
@@ -22,7 +22,8 @@ export default function LotTypeSelector({ value, onChange, counts }) {
             onClick={() => onChange(t.id)}
             title={`${t.label} · ${count.toLocaleString()} car parks`}
           >
-            <span className="lot-type-label">{t.label}</span>
+            <span className="lot-type-label lot-type-label--full">{t.label}</span>
+            <span className="lot-type-label lot-type-label--short">{t.short}</span>
             <span className="lot-type-count">{count.toLocaleString()}</span>
           </button>
         );
