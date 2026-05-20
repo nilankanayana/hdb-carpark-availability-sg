@@ -362,17 +362,27 @@ a:hover { text-decoration: underline; }
     right: 0;
     bottom: 0;
     z-index: 1000;
-    max-height: 78vh;
+    height: 60vh;
+    height: 60dvh;
+    display: flex;
+    flex-direction: column;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     box-shadow: var(--shadow-lg);
     padding-bottom: env(safe-area-inset-bottom);
     animation: sheet-slide-up 240ms cubic-bezier(0.32, 0.72, 0.3, 1);
   }
-  .panel-header { padding: 0.75rem 1rem; }
+  .panel-header {
+    padding: 0.75rem 1rem;
+    flex-shrink: 0;
+  }
   .panel-body {
     padding: 1rem;
     gap: 1rem;
+    flex: 1;
+    min-height: 0;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
   .panel-close {
     width: 36px;
