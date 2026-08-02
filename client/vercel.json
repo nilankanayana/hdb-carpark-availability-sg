@@ -1,6 +1,6 @@
 {
-  "buildCommand": "npm --prefix client run build",
-  "outputDirectory": "client/dist",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "build": {
     "env": {
       "VITE_BASE_PATH": "/projects/hdb-carpark-availability-sg"
