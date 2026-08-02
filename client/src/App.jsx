@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react';
+import { Routes, Route, NavLink, useLocation } from 'react-router-dom';
 import MapView from './components/MapView.jsx';
 import CarparkPanel from './components/CarparkPanel.jsx';
 import SearchBox from './components/SearchBox.jsx';
 import Controls from './components/Controls.jsx';
 import ThemeToggle from './components/ThemeToggle.jsx';
 import LotTypeSelector from './components/LotTypeSelector.jsx';
+import ProjectsPage from './pages/ProjectsPage.jsx';
 import { useCarparks } from './hooks/useCarparks.js';
 import { useTheme } from './hooks/useTheme.js';
 import { mergeCarparks } from './lib/mergeCarparks.js';
@@ -17,6 +19,8 @@ export default function App() {
   const live = useCarparks(REFRESH_MS);
   const [lotType, setLotType] = useState(DEFAULT_LOT_TYPE);
   const [selectedId, setSelectedId] = useState(null);
+  const location = useLocation();
+  const isDashboard = location.pathname === '/';
 
   const merged = useMemo(
     () => mergeCarparks(live.data?.carparks ?? []),
@@ -55,36 +59,47 @@ export default function App() {
             <span className="brand-subtitle">Live availability · LTA / HDB feeds</span>
           </div>
         </div>
+        <nav className="app-nav">
+          <NavLink to="/" end className={({ isActive }) => `app-nav-link${isActive ? ' app-nav-link--active' : ''}`}>Dashboard</NavLink>
+          <NavLink to="/projects" className={({ isActive }) => `app-nav-link${isActive ? ' app-nav-link--active' : ''}`}>Projects</NavLink>
+        </nav>
         <div className="header-actions">
-          <Controls
-            onRefresh={live.refresh}
-            lastUpdated={live.lastUpdated}
-            loading={live.loading}
-            error={live.error}
-            count={filtered.length}
-            label="car parks"
-            hasData={!!live.data}
-            stale={live.data?.stale}
-          />
+          {isDashboard && (
+            <Controls
+              onRefresh={live.refresh}
+              lastUpdated={live.lastUpdated}
+              loading={live.loading}
+              error={live.error}
+              count={filtered.length}
+              label="car parks"
+              hasData={!!live.data}
+              stale={live.data?.stale}
+            />
+          )}
           <ThemeToggle theme={theme} onToggle={toggleTheme} />
         </div>
       </header>
-      <main className="app-main">
-        <section className="map-card">
-          <LotTypeSelector value={lotType} onChange={setLotType} counts={lotTypeCounts} />
-          <SearchBox carparks={filtered} lotType={lotType} onSelect={setSelectedId} />
-          <MapView
-            carparks={filtered}
-            lotType={lotType}
-            selectedId={selectedId}
-            onSelect={setSelectedId}
-          />
-        </section>
-        <section className="side-column">
-          <SearchBox carparks={filtered} lotType={lotType} onSelect={setSelectedId} />
-          <CarparkPanel carpark={selected} lotType={lotType} onClose={() => setSelectedId(null)} />
-        </section>
-      </main>
+      <Routes>
+        <Route path="/" element={
+          <main className="app-main">
+            <section className="map-card">
+              <LotTypeSelector value={lotType} onChange={setLotType} counts={lotTypeCounts} />
+              <SearchBox carparks={filtered} lotType={lotType} onSelect={setSelectedId} />
+              <MapView
+                carparks={filtered}
+                lotType={lotType}
+                selectedId={selectedId}
+                onSelect={setSelectedId}
+              />
+            </section>
+            <section className="side-column">
+              <SearchBox carparks={filtered} lotType={lotType} onSelect={setSelectedId} />
+              <CarparkPanel carpark={selected} lotType={lotType} onClose={() => setSelectedId(null)} />
+            </section>
+          </main>
+        } />
+        <Route path="/projects" element={<ProjectsPage />} />
+      </Routes>
       <footer className="app-footer">
         <span>
           Data from <a href="https://data.gov.sg" target="_blank" rel="noreferrer">data.gov.sg</a>,

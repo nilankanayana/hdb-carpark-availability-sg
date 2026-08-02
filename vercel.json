@@ -1,0 +1,12 @@
+{
+  "buildCommand": "npm --prefix client run build",
+  "outputDirectory": "client/dist",
+  "build": {
+    "env": {
+      "VITE_BASE_PATH": "/projects/hdb-carpark-availability-sg"
+    }
+  },
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
