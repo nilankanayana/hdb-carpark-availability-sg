@@ -4,6 +4,8 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import '@maplibre/maplibre-gl-leaflet';
 import { lotInfoFor } from '../lib/mergeCarparks.js';
 import MapLegend from './MapLegend.jsx';
 
@@ -12,9 +14,12 @@ const DEFAULT_ZOOM = 12;
 const FOCUS_ZOOM = 17;
 const NEAR_ME_ZOOM = 15;
 
-const TILE_URL = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+// CARTO's legacy raster tile API (basemaps.cartocdn.com/rastertiles/...) now
+// requires a paid key. This is their current free vector (GL) Voyager style,
+// rendered via MapLibre GL — no key needed.
+const VOYAGER_STYLE_URL = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
 const TILE_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
+  '&copy; <a href="https://carto.com/about-carto/" target="_blank" rel="noreferrer">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
 const LOCATE_ICON_SVG =
   '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
@@ -62,11 +67,11 @@ export default function MapView({ carparks, lotType, selectedId, onSelect }) {
     const map = L.map(containerRef.current, {
       zoomControl: true,
       attributionControl: true,
-    }).setView(DEFAULT_CENTER, DEFAULT_ZOOM);
-    L.tileLayer(TILE_URL, {
       maxZoom: 19,
+    }).setView(DEFAULT_CENTER, DEFAULT_ZOOM);
+    L.maplibreGL({
+      style: VOYAGER_STYLE_URL,
       attribution: TILE_ATTRIBUTION,
-      subdomains: 'abcd',
     }).addTo(map);
     mapRef.current = map;
 
